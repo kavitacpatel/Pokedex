@@ -1,6 +1,8 @@
 # Pokedex
 
 This is a fun application of showing list of Pokemon characters.
+I have used .csv file with list of characters.
+My images are in Assets folder.
 Extra feature with music and search function.
 
 Music can be on  thru out application and can be turn off.
