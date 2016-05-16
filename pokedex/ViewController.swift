@@ -11,60 +11,55 @@ import AVFoundation
 
 class ViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UISearchBarDelegate {
 
+    @IBOutlet weak var musicBtn: UIButton!
+    @IBOutlet weak var searchBar: UISearchBar!
+    @IBOutlet weak var collectionView: UICollectionView!
+    var isSearch = false
+   // var isMusic = true
     var pokemon = [Pokemon]()
-    var player: AVAudioPlayer!
-    var filterpokemon = [Pokemon]()
-    @IBOutlet weak var searchbar: UISearchBar!
-    @IBOutlet weak var collection: UICollectionView!
-    var issearch = false
+    var filterPokemon = [Pokemon]()
     
-    
-    override func viewDidLoad() {
+    override func viewDidLoad()
+    {
         super.viewDidLoad()
-        collection.delegate = self
-        collection.dataSource = self
-        searchbar.delegate = self
-        searchbar.returnKeyType = UIReturnKeyType.Done
-        play()
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        searchBar.delegate = self
+        searchBar.returnKeyType = UIReturnKeyType.Done
         parsecsv()
-        
+        //MusicPlayer.sharedInstance.play()
+    }
+    override func viewDidAppear(animated: Bool)
+    {
+        super.viewDidAppear(animated)
+        if MusicPlayer.sharedInstance.isMusic
+        {
+            MusicPlayer.sharedInstance.player.play()
+            musicBtn.alpha = 1.0
+        }
     }
     
-    func searchBarSearchButtonClicked(searchBar: UISearchBar) {
+    func searchBarSearchButtonClicked(searchBar: UISearchBar)
+    {
         view.endEditing(true)
     }
     
-    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
-        if searchbar.text == nil || searchbar.text == ""
+    func searchBar(searchBar: UISearchBar, textDidChange searchText: String)
+    {
+        if searchBar.text == nil || searchBar.text == ""
         {
-            issearch = false
+            isSearch = false
             view.endEditing(true)
         }
         else
         {
-            issearch = true
-            
-            let lower = searchbar.text!.lowercaseString
-            filterpokemon = pokemon.filter({$0.name.rangeOfString(lower) != nil})
-            
-            collection.reloadData()
+            isSearch = true
+            let lower = searchBar.text!.lowercaseString
+            filterPokemon = pokemon.filter({$0.name.rangeOfString(lower) != nil})
+            collectionView.reloadData()
         }
     }
     
-    func play()
-    {
-        let path = NSBundle.mainBundle().pathForResource("music", ofType: "mp3")!
-        do{
-            player = try AVAudioPlayer(contentsOfURL: NSURL(string: path)!)
-            player.prepareToPlay()
-            player.numberOfLoops = -1
-            player.play()
-        }catch let err as NSError
-        {
-            print(err.description)
-        }
-        
-    }
     func parsecsv()
     {
         let path = NSBundle.mainBundle().pathForResource("pokemon", ofType: "csv")!
@@ -89,9 +84,9 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
         if let cell = collectionView.dequeueReusableCellWithReuseIdentifier("Pokecell", forIndexPath: indexPath) as? pokecell
         {
             var poke: Pokemon!
-            if issearch
+            if isSearch
             {
-                poke = filterpokemon[indexPath.row]
+                poke = filterPokemon[indexPath.row]
                 
             }
             else
@@ -109,9 +104,9 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
     }
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         let pok: Pokemon!
-        if issearch
+        if isSearch
         {
-            pok = filterpokemon[indexPath.row]
+            pok = filterPokemon[indexPath.row]
         }else
         {
             pok = pokemon[indexPath.row]
@@ -135,9 +130,9 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
     }
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if issearch
+        if isSearch
         {
-            return filterpokemon.count
+            return filterPokemon.count
         }
         
         return pokemon.count
@@ -154,14 +149,16 @@ class ViewController: UIViewController, UICollectionViewDataSource, UICollection
     }
 
     @IBAction func sound(sender: UIButton) {
-        if player.playing
+        if MusicPlayer.sharedInstance.isMusic
         {
-            player.stop()
+            MusicPlayer.sharedInstance.player.stop()
+            MusicPlayer.sharedInstance.isMusic = false
             sender.alpha = 0.2
         }
         else
         {
-            player.play()
+            MusicPlayer.sharedInstance.player.play()
+            MusicPlayer.sharedInstance.isMusic = true
             sender.alpha = 1.0
         }
     }

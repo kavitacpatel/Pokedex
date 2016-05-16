@@ -22,13 +22,6 @@ class Pokemondetailvc: UIViewController {
     @IBOutlet weak var weightlbl: UILabel!
     @IBOutlet weak var namelbl: UILabel!
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-       
-        
-        
-
-    }
     override func viewWillAppear(animated: Bool) {
         namelbl.text = pokemon.name
         idlbl.text = String(pokemon.id)
@@ -43,9 +36,6 @@ class Pokemondetailvc: UIViewController {
                     self.weightlbl.text = self.pokemon.weight
                     super.viewWillAppear(true)
             })
-            
         }
-
     }
-  
-}
+  }
